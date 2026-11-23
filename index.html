@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Jingle's Christmas Photo Hunt</title>
+<style>
+:root{
+  --green:#0f4d34; --green-d:#08301f; --green-l:#e3f3ea;
+  --red:#c8102e; --red-d:#8f0b20; --red-l:#fde6ea;
+  --gold:#f5a20f; --gold-l:#fff1d1;
+  --blue:#1d5fa8; --blue-l:#e2edf9;
+  --purple:#6b3fa0; --purple-l:#efe6fa;
+  --ink:#17201c; --grey:#5b6660; --line:#d6ddd9; --snow:#fbfaf6;
+  --fs:28px;
+}
+*{box-sizing:border-box;touch-action:manipulation}
+html{font-size:var(--fs);overflow-x:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--green-d);color:var(--ink);
+  font-family:Calibri,Carlito,"Segoe UI",Candara,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.35;overflow-x:hidden}
+.disp{font-family:"Segoe UI Black","Arial Black","Segoe UI",Carlito,Calibri,system-ui,sans-serif;font-weight:900}
+button{font:inherit;font-size:1rem;cursor:pointer;color:inherit}
+button:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+h1,h2,h3{margin:0;overflow-wrap:break-word;hyphens:none}
+
+/* snow */
+.snow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.flake{position:absolute;top:-2rem;color:#fff;opacity:.75;animation:fall linear infinite;font-size:.8rem}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:#111;color:#fff;display:flex;align-items:center;gap:.3rem;padding:.3rem .4rem;flex-wrap:wrap}
+.dots{display:flex;gap:.18rem;flex:none}
+.dots i{width:.42rem;height:.42rem;border-radius:50%;display:block}
+.addr{flex:1 1 6rem;min-width:0;background:#2a2a2a;border-radius:2rem;padding:.2rem .6rem;font-size:.72rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ddd}
+.addr b{color:var(--gold)}
+.tbtn{background:#2f2f2f;border:2px solid #444;color:#fff;border-radius:.5rem;min-width:2.2rem;min-height:2.2rem;padding:0 .4rem;font-weight:700}
+.tbtn[hidden]{display:none}
+.saved{position:absolute;top:calc(100% + .3rem);right:.5rem;z-index:30;background:var(--green);color:#fff;border-radius:2rem;padding:.15rem .6rem;
+  font-size:.75rem;opacity:0;transition:opacity .3s;pointer-events:none}
+.saved.on{opacity:1}
+
+/* lights progress */
+.lights{position:relative;z-index:1;display:flex;justify-content:center;gap:.15rem;padding:.35rem .3rem .2rem;flex-wrap:wrap;background:var(--green-d)}
+.bulb{width:.7rem;height:.95rem;border-radius:50% 50% 45% 45%;background:#33463d;border-top:.18rem solid #777;transition:.4s}
+.bulb.on{box-shadow:0 0 .5rem currentColor}
+
+main{position:relative;z-index:1;max-width:46rem;margin:0 auto;padding:.6rem .55rem 6rem}
+.card{background:var(--snow);border-radius:1rem;padding:min(.9rem,4vw);margin:.7rem 0;box-shadow:0 .3rem 0 rgba(0,0,0,.25)}
+
+/* hero */
+.pill{display:inline-block;background:var(--red);color:#fff;border-radius:2rem;padding:.15rem .75rem;font-size:.8rem;font-weight:700;letter-spacing:.02em}
+.hero{background:linear-gradient(135deg,var(--red) 0%,var(--red-d) 100%);color:#fff;border-radius:1rem;padding:1rem;margin-top:.6rem;position:relative;overflow:hidden}
+.hero h1{font-size:min(1.7rem,10vw);line-height:1.1;margin:.4rem 0}
+.hero p{margin:.35rem 0}
+.hero .big{font-size:2.6rem;position:absolute;right:.6rem;top:.4rem;opacity:.9}
+.hero .pill{background:var(--gold);color:#111}
+
+.steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(7rem,100%),1fr));gap:.5rem;margin:.6rem 0}
+.st{border-radius:.8rem;padding:.6rem;text-align:center;font-weight:700}
+.st span{display:block;font-size:1.8rem}
+.rules{margin:.3rem 0 0;padding-left:1.1rem}
+.rules li{margin:.25rem 0}
+
+label.lab{display:block;font-weight:700;margin:.4rem 0 .3rem}
+input.team{width:100%;font:inherit;font-size:1rem;padding:.45rem .6rem;border:3px solid var(--green);border-radius:.6rem;min-height:2.4rem}
+
+.big-btn{display:block;width:100%;border:0;border-radius:.8rem;padding:.55rem .8rem;min-height:2.5rem;font-weight:700;margin:.5rem 0;
+  box-shadow:0 .2rem 0 rgba(0,0,0,.3)}
+.b-red{background:var(--red);color:#fff}
+.b-green{background:var(--green);color:#fff}
+.b-gold{background:var(--gold);color:#111}
+.b-white{background:#fff;color:var(--ink);border:3px solid var(--line)}
+.big-btn:active{transform:translateY(.1rem);box-shadow:none}
+.big-btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* tree */
+.treebox{background:radial-gradient(circle at 50% 40%,#16603f,#08301f 75%);border-radius:1rem;padding:.6rem;text-align:center;color:#fff}
+.treebox svg{width:100%;max-width:17rem;height:auto;display:block;margin:0 auto}
+.count{font-size:1.1rem;margin:.2rem 0}
+.welcome{background:var(--gold);color:#111;border-radius:.8rem;padding:.6rem .8rem;font-weight:700;margin-top:.6rem}
+
+.zone{margin:1rem 0 .2rem;display:flex;align-items:center;gap:.4rem;color:#fff}
+.zone .zl{width:1.9rem;height:1.9rem;border-radius:.5rem;display:grid;place-items:center;font-weight:900;color:#fff;flex:none}
+.zone h2{font-size:min(1.05rem,7vw)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(9rem,100%),1fr));gap:.5rem}
+.sc{background:var(--snow);border:0;border-radius:.9rem;padding:.6rem;text-align:left;min-height:4.5rem;position:relative;border-bottom:.35rem solid var(--line);display:flex;flex-direction:column;gap:.15rem}
+.sc .em{font-size:1.6rem;line-height:1}
+.sc .t{font-weight:700;line-height:1.15}
+.sc .s{font-size:.75rem;color:var(--grey)}
+.sc.done{background:#1a8a4a;color:#fff;border-bottom-color:#0b4d27!important;box-shadow:0 0 0 .2rem #7ee0a4 inset}
+.sc.done .t{color:#fff}
+.sc.done .s{color:#fff;font-weight:900;font-size:.95rem}
+.sc.done .tag{background:rgba(255,255,255,.22)!important;color:#fff!important}
+.sc.done::after{content:"✓";position:absolute;right:.45rem;top:.45rem;width:1.9rem;height:1.9rem;border-radius:50%;
+  background:#fff;color:#1a8a4a;display:grid;place-items:center;font-weight:900;font-size:1.25rem;line-height:1;box-shadow:0 .1rem .3rem rgba(0,0,0,.3)}
+.sc.part{background:#fff4dc;box-shadow:0 0 0 .2rem #f5a20f inset}
+.sc.part .s{color:#8a5210;font-weight:900}
+.sc .tag{align-self:flex-start;font-size:.68rem;border-radius:2rem;padding:.02rem .45rem;font-weight:700;margin-top:.15rem}
+
+/* station */
+.shead{flex-wrap:wrap;border-radius:1rem;padding:min(.8rem,4vw);color:#fff;display:flex;gap:.6rem;align-items:center}
+.shead .em{font-size:2.4rem;flex:none}
+.shead>div{min-width:0}
+@media (max-width:420px){.shead .em{font-size:1.6rem}}
+.shead h1{font-size:min(1.3rem,8.5vw);line-height:1.15}
+.shead .k{font-size:.75rem;opacity:.9;font-weight:700}
+.step{display:flex;gap:.5rem;align-items:flex-start}
+.step .n{flex:none;width:1.8rem;height:1.8rem;border-radius:.45rem;background:#111;color:#fff;display:grid;place-items:center;font-weight:900}
+.step>div{flex:1;min-width:0}
+main p,main li,main .ph,main .q{overflow-wrap:break-word}
+.step h2{font-size:min(1.05rem,7vw);margin-bottom:.2rem}
+.step p{margin:.15rem 0}
+.locked{opacity:.5}
+.photo{width:100%;border-radius:.8rem;display:block;margin:.5rem 0;border:4px solid #fff;box-shadow:0 0 0 3px var(--green)}
+.camwrap{position:relative}
+.camwrap input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.note{background:var(--gold-l);border-left:.4rem solid var(--gold);border-radius:.5rem;padding:.4rem .6rem;margin:.5rem 0;font-size:.9rem}
+.note.warn{background:var(--red-l);border-color:var(--red)}
+.tagline{display:inline-block;font-size:.72rem;font-weight:700;border-radius:2rem;padding:.05rem .5rem;margin-bottom:.3rem}
+.q{font-weight:700;font-size:1.05rem;margin:.3rem 0 .5rem;white-space:pre-line}
+.opt{display:flex;align-items:center;gap:.5rem;width:100%;text-align:left;background:#fff;border:3px solid var(--blue);border-radius:.8rem;
+  padding:.45rem .6rem;min-height:2.3rem;margin:.4rem 0;white-space:pre-line}
+.opt .L{flex:none;width:1.6rem;height:1.6rem;border-radius:.4rem;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900;font-size:.85rem}
+.opt>span:last-child{min-width:0;overflow-wrap:break-word}
+.opt.no{border-color:#bbb;background:#f1f1f1;color:#888;text-decoration:line-through}
+.opt.no .L{background:#bbb}
+.opt.yes{border-color:var(--green);background:var(--green-l)}
+.opt.yes .L{background:var(--green)}
+.fb{border-radius:.6rem;padding:.45rem .6rem;margin:.4rem 0;font-weight:700}
+.fb.ok{background:var(--green-l);color:var(--green-d)}
+.fb.bad{background:var(--red-l);color:var(--red-d)}
+.why{font-weight:400;display:block;margin-top:.2rem}
+.seq{min-height:2.3rem;border:3px dashed var(--line);border-radius:.8rem;padding:.3rem;margin:.4rem 0}
+.seq .it{display:flex;gap:.4rem;align-items:center;background:var(--green-l);border-radius:.5rem;padding:.25rem .45rem;margin:.2rem 0}
+.seq .it b{flex:none;background:var(--green);color:#fff;border-radius:.35rem;width:1.5rem;height:1.5rem;display:grid;place-items:center;font-size:.8rem}
+.say{background:var(--purple-l);border:3px solid var(--purple);border-radius:.8rem;padding:.6rem;margin:.4rem 0}
+.say .ph{font-weight:700;font-size:1.15rem}
+.say ul{margin:.3rem 0;padding-left:1.1rem}
+.stress{color:var(--red);text-decoration:underline;text-decoration-thickness:.12rem}
+.row{display:flex;gap:.4rem;flex-wrap:wrap}
+.row .big-btn{flex:1 1 min(8rem,100%);width:auto}
+
+/* bottom bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#111;padding:.4rem .5rem calc(.4rem + env(safe-area-inset-bottom));display:flex;gap:.4rem}
+.bar .big-btn{margin:0;flex:1}
+
+/* finish */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(5.5rem,100%),1fr));gap:.35rem;margin:.5rem 0}
+.gallery figure{margin:0;background:#fff;border-radius:.5rem;overflow:hidden;border:2px solid var(--line)}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.gallery figcaption{font-size:.7rem;padding:.1rem .25rem;text-align:center;line-height:1.1}
+.stars{font-size:1.8rem;letter-spacing:.1rem}
+.treewrap{position:relative;max-width:17rem;margin:0 auto}
+.starbtn{position:absolute;left:36%;top:0;width:28%;height:26%;background:transparent;border:0;border-radius:50%;padding:0;margin:0;min-height:0}
+.starline{display:inline-block;font-weight:700;color:#ffe48a;margin:.3rem 0;background:rgba(255,255,255,.1);border:2px solid #ffe48a;border-radius:2rem;padding:.25rem .8rem;min-height:2.2rem}
+.starline.on{color:#ffd23f;font-size:1.05rem}
+.songs{margin:.3rem 0;padding-left:1.1rem}
+.songs li{margin:.25rem 0;font-weight:700}
+.recbtn{background:var(--red);color:#fff}
+.recbtn.on{background:#111;color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 .4rem rgba(200,16,46,.35)}}
+.timer{font-family:Consolas,"Lucida Console","DejaVu Sans Mono","Courier New",monospace;font-size:1.6rem;font-weight:700;text-align:center;margin:.3rem 0}
+.media{width:100%;margin:.4rem 0;border-radius:.6rem}
+.cardimg{width:100%;border-radius:.8rem;margin:.5rem 0}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.pop{animation:pop .6s ease}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.flake{display:none}.pop{animation:none}*{transition:none!important}}
+@media (max-width:420px){.hero .big{display:none}.row{flex-direction:column;gap:0}.row .big-btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="snow" id="snow" aria-hidden="true"></div>
+<header class="top">
+  <div class="dots" aria-hidden="true"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+  <div class="addr" id="addr">jingle.hunt › <b>start</b></div>
+  <button class="tbtn" id="aMinus" aria-label="Smaller text">A−</button>
+  <button class="tbtn" id="aPlus" aria-label="Bigger text">A+</button>
+  <button class="tbtn" id="fsBtn" aria-label="Full screen" hidden>⛶</button>
+  <button class="tbtn" id="homeBtn" aria-label="Go to the tree">🎄</button>
+  <div class="saved" id="saved">✓ Saved</div>
+</header>
+<div class="lights" id="lights" aria-hidden="true"></div>
+<main id="main"></main>
+<nav class="bar" id="bar"></nav>
+<canvas id="fx"></canvas>
+
+<script>
+(function(){
+"use strict";
+var KEY="eal2_xmas_college_photo_hunt_v1";
+var PKEY=KEY+"_photo_";
+var SIZES=[24,28,34,40];
+
+var ZONES=[
+ {name:"Outside",col:"#0f4d34",light:"#e3f3ea",emoji:"🌳"},
+ {name:"Inside the college",col:"#1d5fa8",light:"#e2edf9",emoji:"🏫"},
+ {name:"Food and fun",col:"#c8102e",light:"#fde6ea",emoji:"🍰"},
+ {name:"Festive finds",col:"#b07800",light:"#fff1d1",emoji:"🎄"},
+ {name:"The Christmas star",col:"#c98a00",light:"#fff1d1",emoji:"🌟"},
+ {name:"Last stop",col:"#6b3fa0",light:"#efe6fa",emoji:"🏁"}
+];
+
+/* a = index of the right answer in opts. Options are shuffled when the station opens. */
+var ST=[
+ {id:"doors",pos:1,z:0,em:"🚪",title:"The front doors",tag:"Christmas fact",
+  find:"Find the main doors of the college.",snap:"Take a photo of the doors. No people in the photo, please.",
+  type:"choice",q:"In Australia, Christmas is in ...",opts:["summer","winter","autumn"],a:0,
+  why:"December is summer in Australia. Christmas is hot here!"},
+ {id:"tree",z:0,em:"🌲",title:"A Christmas tree",tag:"Speaking",
+  find:"Find a tree or a big plant.",snap:"Take a photo of it. Pretend it is a Christmas tree!",
+  type:"say",say:"Each person tells the team one plan.",
+  phrase:"At Christmas, I'm going to ...",
+  ex:["At Christmas, I'm going to visit my family.","At Christmas, I'm going to cook a big lunch.","At Christmas, I'm going to go to the beach."],
+  done:"We all said it ✓"},
+ {id:"websign",pos:2,z:0,em:"🪧",title:"A sign with a website",tag:"VU23560: web address",
+  find:"Find a sign with a web address. Look for www, .com.au or .gov.au.",snap:"Take a photo of the sign.",
+  type:"choice",q:"How do you say this web address?\nnsw.gov.au",
+  opts:["N S W dot gov dot A U","N S W slash gov slash A U","N S W dot government dot Australia"],a:0,
+  why:"We say . as dot. We say the letters one by one: N S W and A U."},
+ {id:"red",pos:0,z:0,em:"🎅",title:"Something red",tag:"Christmas words",
+  find:"Find something red, like Santa's suit.",snap:"Take a photo of it.",
+  type:"choice",q:"Santa's suit is red and ...",opts:["white","blue","green"],a:0,
+  why:"Santa wears a red suit with white fur. He has a white beard too."},
+
+ {id:"library",pos:0,z:1,em:"📚",title:"The library",tag:"VU23560: search",
+  find:"Find the library.",snap:"Take a photo of the library sign.",
+  type:"choice",q:"You want a recipe for Christmas cake. What is the best thing to type in the search box?",
+  opts:["christmas cake recipe","Hello, can you please show me how to make a cake for Christmas?","cake cake cake"],a:0,
+  why:"Type a few key words. You do not need a full sentence."},
+ {id:"computer",pos:2,z:1,em:"💻",title:"A computer",tag:"VU23560: tech trouble",
+  find:"Find a computer room or a computer.",snap:"Take a photo of a computer. No people, please.",
+  type:"choice",q:"Your computer stops. Nothing moves on the screen. What do you say?",
+  opts:["My screen is frozen.","My screen is snowing.","My screen is cold."],a:0,
+  why:"Frozen means it stops and does not move. It is not about the weather!"},
+ {id:"notice",pos:1,z:1,em:"📌",title:"A noticeboard",tag:"VU23560: email",
+  find:"Find a noticeboard with posters on it.",snap:"Take a photo of the noticeboard.",
+  type:"choice",q:"Your teacher sends an email about the class Christmas party. You reply. What is the subject line?",
+  opts:["Re: Class Christmas party","Hi","PARTY!!!"],a:0,
+  why:"Re: means it is a reply. The subject tells the reader what the email is about."},
+ {id:"lift",z:1,em:"🛗",title:"The lift or the stairs",tag:"VU23560: log in",
+  find:"Find a lift or some stairs.",snap:"Take a photo of the lift buttons or the stairs.",
+  type:"order",q:"Step by step, like the stairs! Tap the steps in order to open your student email.",
+  fixed:[2,4,0,3,1],items:["Open the college website.","Tap Login.","Tap Student log in.","Type your username and password.","Say yes on your phone."],
+  why:"First open the website. Then tap Login and Student log in. Type your details. Last, say yes on your phone."},
+ {id:"clock",pos:1,z:1,em:"🕰️",title:"A clock",tag:"Say the date",
+  find:"Find a clock.",snap:"Take a photo of the clock.",
+  type:"choice",q:"Christmas Day is 25/12. How do you say it?",
+  opts:["the twenty-fifth of December","the twenty-five of December","December two five"],a:0,
+  why:"For dates we say first, second, third ... twenty-fifth."},
+ {id:"exit",pos:0,z:1,em:"🟩",title:"A green EXIT sign",tag:"VU23560: log out",
+  find:"Find a green EXIT sign. It is green like a Christmas tree!",snap:"Take a photo of the sign.",
+  type:"choice",q:"You finish on a library computer. What do you do before you go?",
+  opts:["Log out.","Log in.","Look up."],a:0,
+  why:"Always log out. Then the next person cannot open your email."},
+
+ {id:"cafe",pos:2,z:2,em:"🥧",title:"The canteen or café",tag:"Aussie Christmas",
+  find:"Find the canteen or a café.",snap:"Take a photo of the menu or the counter. No people, please.",
+  type:"choice",q:"Which dessert do many Australians eat at Christmas?",
+  opts:["pavlova","sushi","hot chips"],a:0,
+  why:"Pavlova is a soft meringue cake with cream and fruit. Yum!"},
+ {id:"bin",pos:2,z:2,em:"🗑️",title:"A bin",tag:"VU23560: email",
+  find:"Find a rubbish bin or a recycling bin.",snap:"Take a photo of the bin.",
+  type:"choice",q:"You delete an email. Where does it go?",
+  opts:["Deleted Items","Inbox","Drafts"],a:0,
+  why:"Deleted emails go to Deleted Items. It is the bin for your emails!"},
+ {id:"water",pos:1,z:2,em:"💧",title:"Water",tag:"Aussie Christmas",
+  find:"Find a water bubbler or a tap.",snap:"Take a photo of it. Have a drink. It is summer!",
+  type:"choice",q:"It is very hot on Boxing Day. Where do many Australians go?",
+  opts:["the beach","the snow","the ice rink"],a:0,
+  why:"Boxing Day is 26 December. Many people go to the beach or the sales."},
+ {id:"shiny",z:2,em:"✨",title:"Something shiny",tag:"Say it",
+  find:"Find something that shines, like a Christmas light.",snap:"A light, a window or something shiny. Take a photo.",
+  type:"sayit",phrase:"Merry Christmas and a Happy New Year!",
+  stressed:"<span class=\"stress\">Mer</span>ry <span class=\"stress\">Christ</span>mas and a <span class=\"stress\">Hap</span>py New <span class=\"stress\">Year</span>!",
+  say:"Listen. Then say it together three times. Make the red parts strong.",
+  done:"We said it 3 times ✓"},
+
+ {id:"xtree",z:3,em:"🎄",title:"A Christmas tree",tag:"Speaking",
+  find:"Find a Christmas tree with decorations.",snap:"Take a photo of the Christmas tree.",
+  type:"say",say:"Each person tells the team one idea for their own tree.",
+  phrase:"This year, I'll put ... on my tree.",
+  ex:["This year, I'll put red baubles on my tree.","This year, I'll put lights on my tree.","This year, I'll put a big star on my tree."],
+  done:"We all said it ✓"},
+ {id:"bauble",pos:0,z:3,em:"🔴",title:"A bauble",tag:"Christmas words",
+  find:"Find a bauble. It is a round, shiny ball for the tree.",snap:"Take a photo of the bauble.",
+  type:"choice",q:"One bauble, two ...",opts:["baubles","bauble","baubleses"],a:0,
+  why:"For more than one, add s: one bauble, two baubles."},
+ {id:"tinsel",pos:0,z:3,em:"🎊",title:"Tinsel",tag:"Prepositions",
+  find:"Find some tinsel. It is long, shiny and sparkly.",snap:"Take a photo of the tinsel.",
+  type:"choice",q:"We wrap the tinsel ___ the Christmas tree.",opts:["around","under","into"],a:0,
+  why:"Around means it goes in a circle on the outside of the tree."},
+ {id:"wreath",pos:1,z:3,em:"💚",title:"A wreath",tag:"Say it",
+  find:"Find a wreath. It is a green circle with leaves. People hang it on a door.",snap:"Take a photo of the wreath.",
+  type:"choice",q:"Say the word wreath. Which letter is silent?",opts:["w","r","h"],a:0,
+  why:"We do not say the w. Wreath sounds like reeth. It is the same in write and wrong."},
+ {id:"snowman",pos:2,z:3,em:"⛄",title:"A snowman",tag:"Christmas words",
+  find:"Find a snowman. Look for a toy, a picture or a decoration.",snap:"Take a photo of the snowman.",
+  type:"choice",q:"A snowman has a carrot for a ...",opts:["nose","hand","hat"],a:0,
+  why:"The orange carrot is the snowman's nose."},
+ {id:"car",pos:2,z:3,em:"🚗",title:"A Christmas car",tag:"Word forms",
+  find:"Find a car with Christmas decorations. Look for antlers, a red nose or tinsel.",snap:"Take a photo of the car. Do not touch it. No number plates and no people.",
+  type:"choice",q:"The car has antlers and a red nose. The car is ...",opts:["decorated","decorate","decorating"],a:0,
+  why:"After is, we use decorated to describe the car. Someone decorated it."},
+ {id:"santa",pos:0,z:3,em:"🎅",title:"Santa",tag:"Christmas words",
+  find:"Find Santa. Look for a picture, a toy or a decoration.",snap:"Take a photo of Santa.",
+  type:"choice",q:"Santa has many little helpers. They are called ...",opts:["elves","elfs","elfes"],a:0,
+  why:"One elf, two elves. Jingle is an elf!"},
+ {id:"star",pos:1,z:3,em:"🌟",title:"A star",tag:"Prepositions",
+  find:"Find a star. It can be gold, silver or a light.",snap:"Take a photo of the star.",
+  type:"choice",q:"The star goes ___ the top of the tree.",opts:["at","in","under"],a:0,
+  why:"We say at the top and at the bottom."},
+ {id:"present",pos:1,z:3,em:"🎁",title:"A present",tag:"Polite English",
+  find:"Find a present. Look for a box with paper and a bow.",snap:"Take a photo of the present.",
+  type:"choice",q:"A friend gives you a present. What do you say?",opts:["Thank you so much! I love it.","How much was it?","Give me another one."],a:0,
+  why:"Say thank you. Do not ask about the price. That is not polite."},
+ {id:"candy",pos:0,z:3,em:"🍬",title:"A candy cane",tag:"Christmas words",
+  find:"Find a candy cane. It is red and white, like a walking stick.",snap:"Take a photo of the candy cane.",
+  type:"choice",q:"A candy cane usually tastes like ...",opts:["mint","chilli","cheese"],a:0,
+  why:"Most candy canes taste like peppermint. They are fresh and sweet."},
+ {id:"reindeer",pos:2,z:3,em:"🦌",title:"A reindeer",tag:"Christmas words",
+  find:"Find a reindeer. Look for a toy, a picture or antlers.",snap:"Take a photo of the reindeer.",
+  type:"choice",q:"One reindeer, two ...",opts:["reindeer","reindeers","reindeeres"],a:0,
+  why:"Reindeer is the same for one and more than one, like sheep."},
+
+ {id:"sing",z:4,em:"🎤",title:"Sing a Christmas song",tag:"Lights the star",
+  type:"sing"},
+
+ {id:"room",pos:0,z:5,em:"🎁",title:"Our classroom",tag:"VU23560: email",
+  find:"Go back to your classroom. Do this one last.",snap:"Take a photo of your classroom door. No people, please.",
+  type:"choice",q:"Which email ending is correct?",
+  opts:["Merry Christmas,\nJulia","Merry Christmas, Julia","merry christmas\njulia"],a:0,
+  why:"Put the closing on one line. Put your name on the next line. Use capital letters."}
+];
+var N=ST.length;
+var BULB_COLS=["#ff4d4d","#ffd23f","#4dd2ff","#7dff6b","#ff8cf0"];
+
+/* ---------- storage ---------- */
+function storageOK(){try{var t="__t";localStorage.setItem(t,"1");localStorage.removeItem(t);return true;}catch(e){return false;}}
+var CAN=storageOK();
+var S=load();
+function fresh(){return {team:"",started:false,size:1,st:{},finished:false};}
+function load(){
+  if(!CAN)return fresh();
+  try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.st)return s;}catch(e){}
+  return fresh();
+}
+var savedT;
+function save(){
+  if(!CAN)return;
+  try{localStorage.setItem(KEY,JSON.stringify(S));
+    var el=document.getElementById("saved");el.classList.add("on");clearTimeout(savedT);savedT=setTimeout(function(){el.classList.remove("on");},1100);
+  }catch(e){}
+}
+var photoCache={};
+function getPhoto(id){
+  if(photoCache[id])return photoCache[id];
+  if(!CAN)return null;
+  try{var p=localStorage.getItem(PKEY+id);if(p)photoCache[id]=p;return p;}catch(e){return null;}
+}
+function setPhoto(id,data){
+  photoCache[id]=data;
+  if(!CAN)return false;
+  try{localStorage.setItem(PKEY+id,data);return true;}catch(e){return false;}
+}
+function clearAll(){
+  photoCache={};delSong();pendingSong=null;
+  if(CAN){try{ST.forEach(function(s){localStorage.removeItem(PKEY+s.id);});localStorage.removeItem(KEY);}catch(e){}}
+  var size=S.size;S=fresh();S.size=size;
+}
+setInterval(save,1500);
+window.addEventListener("pagehide",save);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();});
+
+function stOf(id){if(!S.st[id])S.st[id]={photo:false,ok:false,first:null,order:null,no:[],seq:[]};return S.st[id];}
+function isDone(id){var s=S.st[id];return !!(s&&s.photo&&s.ok);}
+function doneCount(){var c=0;ST.forEach(function(s){if(isDone(s.id))c++;});return c;}
+function score(){var c=0;ST.forEach(function(s){if(s.type==="sing")return;var x=S.st[s.id];if(x&&x.ok&&x.first)c++;});return c;}
+
+/* ---------- shuffle ---------- */
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function idxs(n){var a=[];for(var i=0;i<n;i++)a.push(i);return a;}
+function orderFor(s){
+  var x=stOf(s.id);
+  if(s.type==="choice"){
+    /* fixed order: the right answer sits at s.pos, the others keep their order */
+    var rest=[];for(var q=0;q<s.opts.length;q++)if(q!==s.a)rest.push(q);
+    rest.splice(s.pos,0,s.a);return rest;
+  }
+  if(s.type==="order")return s.fixed;
+  var n=s.opts.length;
+  if(!x.order||x.order.length!==n){
+    var o;var tries=0;
+    do{o=shuffle(idxs(n));tries++;}while(s.type==="order"&&o.join()===idxs(n).join()&&tries<20);
+    x.order=o;
+  }
+  return x.order;
+}
+
+/* ---------- text size + full screen ---------- */
+function applySize(){document.documentElement.style.setProperty("--fs",SIZES[S.size]+"px");}
+document.getElementById("aMinus").onclick=function(){if(S.size>0){S.size--;applySize();save();}};
+document.getElementById("aPlus").onclick=function(){if(S.size<SIZES.length-1){S.size++;applySize();save();}};
+var fsB=document.getElementById("fsBtn");
+var de=document.documentElement;
+if(de.requestFullscreen||de.webkitRequestFullscreen){fsB.hidden=false;
+  fsB.onclick=function(){
+    try{
+      if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document);}
+      else{(de.requestFullscreen||de.webkitRequestFullscreen).call(de);}
+    }catch(e){}
+  };
+}
+document.getElementById("homeBtn").onclick=function(){if(S.started)go("map");else go("start");};
+
+/* ---------- snow + lights ---------- */
+(function(){
+  var sn=document.getElementById("snow");var ch=["❄","❅","❆","✦"];
+  for(var i=0;i<18;i++){var f=document.createElement("span");f.className="flake";f.textContent=ch[i%4];
+    f.style.left=(Math.random()*92)+"%";f.style.animationDuration=(9+Math.random()*10)+"s";f.style.animationDelay=(-Math.random()*15)+"s";
+    f.style.fontSize=(.5+Math.random()*.7)+"rem";sn.appendChild(f);}
+})();
+function drawLights(){
+  var l=document.getElementById("lights");var h="";
+  ST.forEach(function(s,i){var on=isDone(s.id);var c=BULB_COLS[i%5];
+    h+='<span class="bulb'+(on?' on':'')+'" style="'+(on?'background:'+c+';color:'+c:'')+'"></span>';});
+  l.innerHTML=h;
+}
+
+/* ---------- helpers ---------- */
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var M=document.getElementById("main"),BAR=document.getElementById("bar"),ADDR=document.getElementById("addr");
+var cur={screen:"start",id:null};
+function setAddr(t){ADDR.innerHTML="jingle.hunt › <b>"+esc(t)+"</b>";}
+function go(screen,id){cur={screen:screen,id:id||null};render();window.scrollTo(0,0);}
+function render(){
+  applySize();drawLights();
+  if(cur.screen==="start")renderStart();
+  else if(cur.screen==="map")renderMap();
+  else if(cur.screen==="station")renderStation();
+  else if(cur.screen==="finish")renderFinish();
+}
+
+/* ---------- tree svg ---------- */
+var ORN=(function(){var rows=[[64,2],[86,3],[108,4],[126,5],[148,6],[168,6]],o=[];
+  var tiers=[[28,92,40],[52,128,54],[82,180,70]];function hw(y){var m=0;tiers.forEach(function(t){if(y>=t[0]&&y<=t[1])m=Math.max(m,t[2]*(y-t[0])/(t[1]-t[0]));});return m;}
+  rows.forEach(function(r){var half=hw(r[0])*0.82-5;for(var i=0;i<r[1];i++){var x=100-half+(2*half)*i/(r[1]-1);o.push([Math.round(x),r[0]+(i%2?2:0)]);}});
+  return o;})();
+var BAUB=ST.filter(function(s){return s.type!=="sing";});
+var SING=ST.filter(function(s){return s.type==="sing";})[0];
+function baubleCount(){var c=0;BAUB.forEach(function(s){if(isDone(s.id))c++;});return c;}
+function starOn(){return isDone(SING.id);}
+function treeSVG(){
+  var d=baubleCount(),all=starOn();
+  var s='<svg viewBox="0 0 200 215" role="img" aria-label="Christmas tree with '+d+' of '+BAUB.length+' baubles'+(all?' and a shining star':'')+'">';
+  s+='<rect x="88" y="178" width="24" height="26" rx="3" fill="#7a4a24"/>';
+  s+='<polygon points="100,28 140,92 60,92" fill="#1f8a4c"/>';
+  s+='<polygon points="100,52 154,128 46,128" fill="#197a42"/>';
+  s+='<polygon points="100,82 170,180 30,180" fill="#146c39"/>';
+  s+='<path d="M62 118 Q100 134 140 116" stroke="#f5a20f" stroke-width="3" fill="none"/>';
+  s+='<path d="M48 150 Q100 170 154 148" stroke="#f5a20f" stroke-width="3" fill="none"/>';
+  ORN.forEach(function(p,i){var on=isDone(BAUB[i].id);
+    s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="6.5" fill="'+(on?BULB_COLS[i%5]:'none')+'" stroke="'+(on?'#fff':'rgba(255,255,255,.45)')+'" stroke-width="2"'+(on?'':' stroke-dasharray="3 2"')+'/>';
+    if(on)s+='<circle cx="'+(p[0]-2.5)+'" cy="'+(p[1]-2.5)+'" r="2" fill="#fff" opacity=".8"/>';
+  });
+  s+='<g data-star="1" style="cursor:pointer"><circle cx="100" cy="28" r="22" fill="transparent"/><polygon points="100,6 106,22 123,22 109,32 114,48 100,38 86,48 91,32 77,22 94,22" fill="'+(all?'#ffd23f':'#4b5a52')+'" stroke="#fff" stroke-width="1.5"'+(all?' style="filter:drop-shadow(0 0 7px #ffd23f)"':' stroke-dasharray="3 2"')+'/></g>';
+  s+='</svg>';
+  return '<div class="treewrap">'+s+'<button class="starbtn" data-singstar="1" aria-label="'+(all?'Hear our song':'Sing a song to light the star')+'"></button></div>';
+}
+
+function starLine(){return starOn()?'<button class="starline on" data-singstar="1">🌟 The star is shining! Tap to hear your song.</button>':'<button class="starline" data-singstar="1">⭐ Tap here. Sing a song to light the star!</button>';}
+
+/* ---------- START ---------- */
+function renderStart(){
+  setAddr("start");
+  var back=S.started;
+  var h='<span class="pill">🎄 EAL 2 Christmas Hunt</span>';
+  h+='<section class="hero"><div class="big" aria-hidden="true">🧝</div><span class="pill">Photo hunt</span>';
+  h+='<h1 class="disp">Jingle\'s Christmas Photo Hunt</h1>';
+  h+='<p>Jingle the elf is lost at our college!</p><p>Help Jingle find '+N+' places.</p><p>Each place puts a bauble on the tree.</p><p>Sing a Christmas song to light the star! 🌟</p></section>';
+  h+='<div class="card"><h2 class="disp" style="font-size:1.1rem">How it works</h2><div class="steps3">';
+  h+='<div class="st" style="background:var(--green-l)"><span>🔍</span>Find it</div>';
+  h+='<div class="st" style="background:var(--blue-l)"><span>📸</span>Snap it</div>';
+  h+='<div class="st" style="background:var(--gold-l)"><span>✅</span>Answer it</div></div>';
+  h+='<ul class="rules"><li>Stay with your team.</li><li>No photos of people.</li><li>Be quiet near classrooms.</li><li>Go back to your classroom at the end.</li></ul></div>';
+  h+='<div class="card"><label class="lab" for="team">Your team name</label>';
+  h+='<input class="team" id="team" maxlength="30" autocomplete="off" placeholder="For example: The Reindeer" value="'+esc(S.team)+'">';
+  if(!CAN)h+='<div class="note warn">This browser cannot save. You can still play. Do not close the page.</div>';
+  h+='</div>';
+  M.innerHTML=h;
+  BAR.innerHTML='<button class="big-btn b-red" id="goBtn">'+(back?'Keep going 🎄':'Start the hunt 🎄')+'</button>';
+  document.getElementById("goBtn").onclick=function(){
+    var v=document.getElementById("team").value.trim();
+    S.team=v||"Team Jingle";S.started=true;save();go("map");
+  };
+}
+
+/* ---------- MAP ---------- */
+var resetArm=false;
+function renderMap(){
+  setAddr("tree");
+  var d=doneCount();
+  var h='<span class="pill">🎄 EAL 2 Christmas Hunt</span>';
+  if(d>0&&d<N&&!renderMap.seen){h+='<div class="welcome">👋 Welcome back, '+esc(S.team)+'! Keep going.</div>';}
+  renderMap.seen=true;
+  h+='<div class="treebox" style="margin-top:.6rem">'+treeSVG()+'<div class="count disp">'+baubleCount()+' of '+BAUB.length+' baubles</div>'+starLine()+'<div>Team: '+esc(S.team)+'</div></div>';
+  ZONES.forEach(function(z,zi){
+    h+='<div class="zone"><div class="zl" style="background:'+z.col+'">'+z.emoji+'</div><h2 class="disp">'+esc(z.name)+'</h2></div><div class="grid">';
+    ST.forEach(function(s){ if(s.z!==zi)return;
+      var x=S.st[s.id],done=isDone(s.id),started=x&&(x.photo||x.ok);
+      var sub=done?'Done ✓':(started?'⏳ Keep going':'Tap to start');
+      h+='<button class="sc'+(done?' done':(started?' part':''))+'" data-st="'+s.id+'" style="border-bottom-color:'+z.col+'">';
+      h+='<span class="em">'+s.em+'</span><span class="t">'+esc(s.title)+'</span><span class="s">'+sub+'</span>';
+      h+='<span class="tag" style="background:'+z.light+';color:'+z.col+'">'+esc(s.tag)+'</span></button>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="card"><h2 class="disp" style="font-size:1rem">Start again</h2><p>This clears all photos and answers.</p>';
+  h+='<button class="big-btn b-white" id="resetBtn">'+(resetArm?'Tap again to clear everything':'Start the whole hunt again')+'</button></div>';
+  M.innerHTML=h;
+  BAR.innerHTML='<button class="big-btn b-gold" id="finBtn">'+(d===N?'Finish! ⭐':'I am finished ('+d+'/'+N+')')+'</button>';
+  M.querySelectorAll("[data-st]").forEach(function(b){b.onclick=function(){go("station",b.getAttribute("data-st"));};});
+  document.getElementById("resetBtn").onclick=function(){
+    if(!resetArm){resetArm=true;this.textContent="Tap again to clear everything";var t=this;setTimeout(function(){resetArm=false;if(document.body.contains(t))t.textContent="Start the whole hunt again";},4000);return;}
+    resetArm=false;clearAll();renderMap.seen=false;save();go("start");
+  };
+  document.getElementById("finBtn").onclick=function(){go("finish");};
+}
+
+/* ---------- STATION ---------- */
+var skipArm=false;
+function renderStation(){
+  var s=ST.filter(function(q){return q.id===cur.id;})[0];if(!s){go("map");return;}
+  var z=ZONES[s.z],x=stOf(s.id),pic=getPhoto(s.id);
+  setAddr("station-"+(ST.indexOf(s)+1));
+  if(s.type==="sing"){renderSing(s,z,x);return;}
+  var h='<div class="shead" style="background:'+z.col+'"><span class="em">'+s.em+'</span><div><div class="k">Place '+(ST.indexOf(s)+1)+' of '+N+' · '+esc(z.name)+'</div><h1 class="disp">'+esc(s.title)+'</h1></div></div>';
+  // step 1
+  h+='<div class="card step"><span class="n">1</span><div><h2 class="disp">Find it 🔍</h2><p>'+esc(s.find)+'</p></div></div>';
+  // step 2
+  h+='<div class="card"><div class="step"><span class="n">2</span><div style="flex:1;min-width:0"><h2 class="disp">Snap it 📸</h2><p>'+esc(s.snap)+'</p>';
+  if(pic)h+='<img class="photo pop" src="'+pic+'" alt="Your photo for '+esc(s.title)+'">';
+  else if(x.photo)h+='<div class="note">Photo skipped. You can still answer.</div>';
+  h+='<div class="camwrap"><input type="file" accept="image/*" capture="environment" id="cam" aria-label="Take a photo">';
+  h+='<button class="big-btn b-green" id="camBtn">'+(x.photo?'📸 Take a new photo':'📸 Take a photo')+'</button></div>';
+  if(!x.photo)h+='<button class="big-btn b-white" id="skipBtn" style="font-size:.8rem">'+(skipArm?'Tap again to skip the photo':'Cannot find it? Skip the photo')+'</button>';
+  h+='<div id="camMsg"></div></div></div></div>';
+  // step 3
+  var lock=!x.photo;
+  h+='<div class="card'+(lock?' locked':'')+'"><div class="step"><span class="n">3</span><div style="flex:1;min-width:0"><h2 class="disp">'+(s.type==="say"||s.type==="sayit"?'Say it 🗣️':'Answer it ✅')+'</h2>';
+  h+='<span class="tagline" style="background:'+z.light+';color:'+z.col+'">'+esc(s.tag)+'</span>';
+  if(lock)h+='<p>Take your photo first. Then this part opens.</p>';
+  else h+=taskHTML(s,x);
+  h+='</div></div></div>';
+  if(isDone(s.id))h+='<div class="fb ok pop" style="font-size:1.1rem">🎉 Great work! A new bauble is on the tree.</div>';
+  M.innerHTML=h;
+  var i=ST.indexOf(s),next=null;
+  for(var k=1;k<=N;k++){var c=ST[(i+k)%N];if(!isDone(c.id)&&c.id!==s.id){next=c;break;}}
+  BAR.innerHTML='<button class="big-btn b-white" id="backBtn">🎄 Tree</button>'+(isDone(s.id)&&next?'<button class="big-btn b-red" id="nextBtn">Next place ›</button>':'');
+  document.getElementById("backBtn").onclick=function(){go("map");};
+  if(document.getElementById("nextBtn"))document.getElementById("nextBtn").onclick=function(){go("station",next.id);};
+  // camera
+  var cam=document.getElementById("cam");
+  document.getElementById("camBtn").onclick=function(){cam.click();};
+  cam.onchange=function(){if(cam.files&&cam.files[0])handlePhoto(s,cam.files[0]);};
+  var sk=document.getElementById("skipBtn");
+  if(sk)sk.onclick=function(){
+    if(!skipArm){skipArm=true;sk.textContent="Tap again to skip the photo";setTimeout(function(){skipArm=false;if(document.body.contains(sk))sk.textContent="Cannot find it? Skip the photo";},4000);return;}
+    skipArm=false;x.photo=true;save();renderStation();
+  };
+  if(!lock)bindTask(s,x);
+}
+function nextAfter(s){var i=ST.indexOf(s);for(var k=1;k<=N;k++){var c=ST[(i+k)%N];if(!isDone(c.id)&&c.id!==s.id)return c;}return null;}
+
+function handlePhoto(s,file){
+  var msg=document.getElementById("camMsg");msg.innerHTML='<div class="note">Saving your photo ...</div>';
+  var url=URL.createObjectURL(file);var img=new Image();
+  img.onload=function(){
+    try{
+      var max=640,w=img.naturalWidth,h=img.naturalHeight,r=Math.min(1,max/Math.max(w,h));
+      var c=document.createElement("canvas");c.width=Math.round(w*r);c.height=Math.round(h*r);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      var data=c.toDataURL("image/jpeg",0.62);
+      var ok=setPhoto(s.id,data);
+      var x=stOf(s.id);var was=isDone(s.id);x.photo=true;save();URL.revokeObjectURL(url);
+      renderStation();
+      if(!ok&&CAN){document.getElementById("camMsg").innerHTML='<div class="note warn">The phone is full. This photo is here for now only. Do not close the page.</div>';}
+      if(!was&&isDone(s.id))celebrate();
+    }catch(e){msg.innerHTML='<div class="note warn">Sorry, that photo did not work. Try again.</div>';}
+  };
+  img.onerror=function(){msg.innerHTML='<div class="note warn">Sorry, that photo did not work. Try again.</div>';};
+  img.src=url;
+}
+
+function taskHTML(s,x){
+  var h="";
+  if(s.type==="choice"){
+    h+='<div class="q">'+esc(s.q)+'</div>';
+    var o=orderFor(s);
+    o.forEach(function(oi,pos){
+      var cls=x.ok&&oi===s.a?' yes':(x.no.indexOf(oi)>-1?' no':'');
+      h+='<button class="opt'+cls+'" data-pos="'+pos+'"'+(x.ok||x.no.indexOf(oi)>-1?' disabled':'')+'><span class="L">'+"ABC"[pos]+'</span><span>'+esc(s.opts[oi])+'</span></button>';
+    });
+    h+='<div id="fb">'+(x.ok?'<div class="fb ok">✓ '+(x.first?'Right first time!':'You got it!')+'<span class="why">'+esc(s.why)+'</span></div>':(x.no.length?'<div class="fb bad">Not yet. Try again.</div>':''))+'</div>';
+  }else if(s.type==="order"){
+    h+='<div class="q">'+esc(s.q)+'</div>';
+    if(x.ok){
+      h+='<div class="seq">'+s.items.map(function(t,i){return '<div class="it"><b>'+(i+1)+'</b>'+esc(t)+'</div>';}).join("")+'</div>';
+      h+='<div class="fb ok">✓ '+(x.first?'Right first time!':'You got it!')+'<span class="why">'+esc(s.why)+'</span></div>';
+    }else{
+      var o2=orderFor(s);
+      h+='<div class="seq" aria-live="polite">'+(x.seq.length?x.seq.map(function(oi,i){return '<div class="it"><b>'+(i+1)+'</b>'+esc(s.items[oi])+'</div>';}).join(""):'<span style="color:var(--grey)">Your steps go here.</span>')+'</div>';
+      o2.forEach(function(oi,pos){if(x.seq.indexOf(oi)>-1)return;
+        h+='<button class="opt" data-ord="'+oi+'"><span class="L">'+"ABCDE"[pos]+'</span><span>'+esc(s.items[oi])+'</span></button>';});
+      if(x.seq.length)h+='<button class="big-btn b-white" id="undoBtn">↩ Start the steps again</button>';
+      if(x.no.length&&!x.seq.length)h+='<div class="fb bad">Not quite. Try again. Think: what do you do first?</div>';
+    }
+  }else if(s.type==="say"){
+    h+='<p>'+esc(s.say)+'</p><div class="say"><div class="ph">'+esc(s.phrase)+'</div><p style="margin:.3rem 0 0">For example:</p><ul>'+s.ex.map(function(e){return '<li>'+esc(e)+'</li>';}).join("")+'</ul></div>';
+    h+=x.ok?'<div class="fb ok">✓ Well done, team!</div>':'<button class="big-btn b-red" id="sayBtn">'+esc(s.done)+'</button>';
+  }else if(s.type==="sayit"){
+    h+='<p>'+esc(s.say)+'</p><div class="say"><div class="ph">'+s.stressed+'</div></div>';
+    if("speechSynthesis" in window)h+='<div class="row"><button class="big-btn b-gold" id="lisBtn">🔊 Listen</button><button class="big-btn b-white" id="slowBtn">🐢 Slower</button></div>';
+    h+=x.ok?'<div class="fb ok">✓ Merry Christmas to you too!</div>':'<button class="big-btn b-red" id="sayBtn">'+esc(s.done)+'</button>';
+  }
+  return h;
+}
+
+function speak(t,rate){
+  try{var u=new SpeechSynthesisUtterance(t);u.lang="en-AU";u.rate=rate;
+    var v=speechSynthesis.getVoices().filter(function(v){return /en[-_]AU/i.test(v.lang);})[0]||speechSynthesis.getVoices().filter(function(v){return /^en/i.test(v.lang);})[0];
+    if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
+}
+
+function finishTask(s,x,first){
+  var was=isDone(s.id);x.ok=true;if(x.first===null)x.first=first;save();renderStation();
+  if(!was&&isDone(s.id))celebrate();
+}
+function bindTask(s,x){
+  if(s.type==="choice"&&!x.ok){
+    var o=orderFor(s);
+    M.querySelectorAll("[data-pos]").forEach(function(b){b.onclick=function(){
+      var oi=o[+b.getAttribute("data-pos")];
+      if(oi===s.a){finishTask(s,x,x.no.length===0);}
+      else{if(x.no.indexOf(oi)<0)x.no.push(oi);save();renderStation();}
+    };});
+  }
+  if(s.type==="order"&&!x.ok){
+    M.querySelectorAll("[data-ord]").forEach(function(b){b.onclick=function(){
+      x.seq.push(+b.getAttribute("data-ord"));
+      if(x.seq.length===s.items.length){
+        var right=x.seq.every(function(v,i){return v===i;});
+        if(right){finishTask(s,x,x.no.length===0);return;}
+        x.no.push(1);x.seq=[];
+      }
+      save();renderStation();
+    };});
+    var u=document.getElementById("undoBtn");if(u)u.onclick=function(){x.seq=[];save();renderStation();};
+  }
+  if(s.type==="say"||s.type==="sayit"){
+    var sb=document.getElementById("sayBtn");if(sb)sb.onclick=function(){finishTask(s,x,true);};
+    var lb=document.getElementById("lisBtn");if(lb)lb.onclick=function(){speak(s.phrase,0.95);};
+    var sl=document.getElementById("slowBtn");if(sl)sl.onclick=function(){speak(s.phrase,0.7);};
+  }
+}
+
+/* ---------- SING: record a Christmas song (lights the star) ---------- */
+var IS_IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+var IS_WEBKIT=IS_IOS||(/Safari/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg/.test(navigator.userAgent));
+var pendingSong=null,songMem=null;
+var rec={mr:null,stream:null,chunks:[],t0:0,tick:null,auto:null,stopping:false};
+function extFor(t){t=t||"";return /mp4|m4a|aac/.test(t)?"m4a":(/webm/.test(t)?"webm":(/quicktime|mov/.test(t)?"mov":(/wav/.test(t)?"wav":(/ogg/.test(t)?"ogg":"m4a"))));}
+function mediaTag(r){var u=URL.createObjectURL(r.blob);
+  return r.kind==="video"?'<video class="media" controls playsinline webkit-playsinline src="'+u+'"></video>'
+                         :'<audio class="media" controls playsinline webkit-playsinline src="'+u+'"></audio>';}
+function idb(cb){
+  try{if(!window.indexedDB){cb(null);return;}
+    var r=indexedDB.open(KEY+"_media",1);
+    r.onupgradeneeded=function(){r.result.createObjectStore("m");};
+    r.onsuccess=function(){cb(r.result);};r.onerror=function(){cb(null);};
+  }catch(e){cb(null);}
+}
+function putSong(o,cb){songMem=o;idb(function(db){if(!db){cb(false);return;}
+  try{var tx=db.transaction("m","readwrite");tx.objectStore("m").put(o,"song");tx.oncomplete=function(){cb(true);};tx.onerror=tx.onabort=function(){cb(false);};}catch(e){cb(false);}});}
+function getSong(cb){if(songMem){cb(songMem);return;}idb(function(db){if(!db){cb(null);return;}
+  try{var g=db.transaction("m").objectStore("m").get("song");g.onsuccess=function(){if(g.result)songMem=g.result;cb(g.result||null);};g.onerror=function(){cb(null);};}catch(e){cb(null);}});}
+function delSong(){songMem=null;idb(function(db){if(!db)return;try{db.transaction("m","readwrite").objectStore("m").delete("song");}catch(e){}});}
+function micAllowedHere(){try{var pp=document.permissionsPolicy||document.featurePolicy;if(pp&&pp.allowsFeature)return pp.allowsFeature("microphone");}catch(e){}return true;}
+var micFailed=false;
+function canMic(){return !micFailed&&!!(window.isSecureContext&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder)&&micAllowedHere();}
+function fmt(sec){sec=Math.floor(sec);return Math.floor(sec/60)+":"+("0"+sec%60).slice(-2);}
+
+function renderSing(s,z,x){
+  var h='<div class="shead" style="background:'+z.col+'"><span class="em">'+s.em+'</span><div><div class="k">The Christmas star 🌟</div><h1 class="disp">'+esc(s.title)+'</h1></div></div>';
+  h+='<div class="card step"><span class="n">1</span><div><h2 class="disp">Choose a song 🎶</h2><p>Choose one song with your team.</p>';
+  h+='<ul class="songs"><li>🔔 Jingle Bells</li><li>🎄 We Wish You a Merry Christmas</li><li>⭐ Silent Night</li><li>🎵 Your own favourite Christmas song</li></ul>';
+  h+='<p>Sing together for 20 seconds or more.</p></div></div>';
+  h+='<div class="card"><div class="step"><span class="n">2</span><div><h2 class="disp">Record it 🎤</h2>';
+  if(canMic()){
+    h+='<div class="timer" id="timer">0:00</div>';
+    h+='<button class="big-btn recbtn'+(rec.mr?' on':'')+'" id="recBtn">'+(rec.mr?'⏹ Stop':'🔴 Start recording')+'</button>';
+    h+='<p style="font-size:.85rem">Turn off silent mode so you can hear it.</p>';
+  }else{
+    h+='<div class="note">Voice recording does not work on this page. Use the camera to film your song. Point the camera at a decoration, not at people.</div>';
+  }
+  h+='<div class="camwrap"><input type="file" accept="video/*" capture="environment" id="vid" aria-label="Film your song">';
+  h+='<button class="big-btn '+(canMic()?'b-white':'b-green')+'" id="vidBtn" style="'+(canMic()?'font-size:.85rem':'')+'">🎥 '+(canMic()?'Microphone not working? Film it instead':'Film our song')+'</button></div>';
+  h+='<div id="recMsg"></div></div></div></div>';
+  h+='<div class="card"><div class="step"><span class="n">3</span><div><h2 class="disp">Listen and save 🌟</h2><div id="songOut"><p>Record your song first.</p></div></div></div></div>';
+  M.innerHTML=h;
+  var nx=nextAfter(s);
+  BAR.innerHTML='<button class="big-btn b-white" id="backBtn">🎄 Tree</button>'+(isDone(s.id)&&nx?'<button class="big-btn b-red" id="nextBtn">Next place ›</button>':'');
+  document.getElementById("backBtn").onclick=function(){if(rec.mr)stopRec();go("map");};
+  if(document.getElementById("nextBtn"))document.getElementById("nextBtn").onclick=function(){go("station",nx.id);};
+  var rb=document.getElementById("recBtn");if(rb)rb.onclick=function(){if(rec.mr)stopRec();else startRec();};
+  var vid=document.getElementById("vid");
+  document.getElementById("vidBtn").onclick=function(){if(rec.mr)stopRec();vid.click();};
+  vid.onchange=function(){var f=vid.files&&vid.files[0];if(!f)return;
+    if(f.size<256){recMsg("Nothing was recorded. Try again.",true);return;}
+    pendingSong={blob:f,type:f.type||"video/quicktime",kind:"video"};showSong(s,x);};
+  showSong(s,x);
+}
+function recMsg(t,bad){var m=document.getElementById("recMsg");if(m)m.innerHTML=t?'<div class="note'+(bad?' warn':'')+'">'+esc(t)+'</div>':'';}
+function showSong(s,x){
+  var out=document.getElementById("songOut");if(!out)return;
+  if(pendingSong){
+    out.innerHTML='<p>Listen to your song. Do you like it?</p>'+mediaTag(pendingSong)+
+      '<button class="big-btn b-gold" id="saveSong">🌟 Save our song and light the star</button><p style="font-size:.85rem">Not happy? Record it again.</p>';
+    document.getElementById("saveSong").onclick=function(){
+      var o=pendingSong;var was=isDone(s.id);
+      putSong(o,function(ok){
+        pendingSong=null;x.photo=true;x.ok=true;if(x.first===null)x.first=true;save();
+        renderStation();
+        if(!ok)recMsg("Your song is here for now only. Do not close the page.",true);
+        if(!was)celebrate(true);
+      });
+    };
+    return;
+  }
+  if(isDone(s.id)){
+    getSong(function(r){var o=document.getElementById("songOut");if(!o)return;
+      o.innerHTML='<div class="fb ok pop" style="font-size:1.1rem">🌟 The star is shining! Great singing!</div>'+
+        (r?mediaTag(r)+'<a class="big-btn b-green" style="text-align:center;text-decoration:none" download="Our_Christmas_Song.'+extFor(r.type)+'" href="'+URL.createObjectURL(r.blob)+'">⬇ Save our song</a>':'<p>Your song is saved on another page. You can record it again.</p>');});
+  }
+}
+var gumWait=null,gumId=0;
+function startRec(){
+  var b0=document.getElementById("recBtn");
+  if(b0){b0.disabled=true;b0.textContent="⏳ Opening the microphone ...";}
+  recMsg("Tap Allow if the phone asks.");
+  var gum,id=++gumId,settled=false;
+  try{gum=navigator.mediaDevices.getUserMedia({audio:true});}catch(e){micError(e);return;}
+  clearTimeout(gumWait);
+  gumWait=setTimeout(function(){if(settled||id!==gumId)return;gumId++;micError({name:"Timeout"});},6000);
+  gum.then(function(stream){
+    settled=true;clearTimeout(gumWait);
+    if(id!==gumId){stream.getTracks().forEach(function(t){try{t.stop();}catch(e){}});return;}
+    var b1=document.getElementById("recBtn");if(b1)b1.disabled=false;
+    var mr;
+    try{mr=IS_WEBKIT?new MediaRecorder(stream):new MediaRecorder(stream);}catch(e){stream.getTracks().forEach(function(t){t.stop();});micError(e);return;}
+    rec.stream=stream;rec.mr=mr;rec.chunks=[];rec.stopping=false;
+    mr.ondataavailable=function(e){if(e.data&&e.data.size)rec.chunks.push(e.data);};
+    mr.onstop=function(){finishRec(mr);};
+    mr.onerror=function(e){micError(e.error||e);};
+    try{mr.start(250);}catch(e){stopTracks();rec.mr=null;micError(e);return;}
+    rec.t0=Date.now();
+    var b=document.getElementById("recBtn");if(b){b.classList.add("on");b.textContent="⏹ Stop";}
+    rec.tick=setInterval(function(){var t=document.getElementById("timer");if(t)t.textContent=fmt((Date.now()-rec.t0)/1000);},250);
+    rec.auto=setTimeout(stopRec,120000);
+  },function(e){settled=true;clearTimeout(gumWait);if(id!==gumId)return;micError(e);});
+}
+function stopTracks(){if(rec.stream){rec.stream.getTracks().forEach(function(t){try{t.stop();}catch(e){}});rec.stream=null;}}
+function stopRec(){
+  if(!rec.mr||rec.stopping)return;rec.stopping=true;
+  clearInterval(rec.tick);clearTimeout(rec.auto);
+  try{rec.mr.stop();}catch(e){finishRec(rec.mr);}
+  stopTracks();
+}
+function finishRec(mr){
+  var tries=0;
+  (function wait(){
+    if(!rec.chunks.length&&tries<10){tries++;setTimeout(wait,20);return;}
+    var type=mr.mimeType||(IS_WEBKIT?"audio/mp4":"audio/webm");
+    var blob=new Blob(rec.chunks,{type:type});
+    rec.mr=null;rec.chunks=[];rec.stopping=false;stopTracks();
+    var b=document.getElementById("recBtn");if(b){b.classList.remove("on");b.textContent="🔴 Record again";}
+    if(blob.size<256){recMsg("Nothing was recorded. Try again. Sing near the phone.",true);return;}
+    pendingSong={blob:blob,type:type,kind:"audio"};
+    var s=SING,x=stOf(s.id);showSong(s,x);
+  })();
+}
+function micError(e){
+  clearInterval(rec.tick);clearTimeout(rec.auto);rec.mr=null;stopTracks();
+  var b=document.getElementById("recBtn");if(b){b.disabled=false;b.classList.remove("on");b.textContent="🔴 Try the microphone again";}
+  var v=document.getElementById("vidBtn");if(v){v.className="big-btn b-green pop";v.style.fontSize="";v.textContent="🎥 Film our song";}
+  var n=(e&&e.name)||"Error";
+  var t;
+  if(n==="NotAllowedError"||n==="SecurityError")t=IS_IOS?"The microphone is blocked. Tap aA in the address bar. Tap Website Settings. Set Microphone to Allow.":"The microphone is blocked. Tap the padlock next to the address. Allow the microphone.";
+  else if(n==="Timeout")t="The microphone did not open on this page. Tap 🎥 Film our song. It uses the camera.";
+  else if(n==="NotFoundError")t="This device has no microphone. Tap 🎥 Film our song.";
+  else if(n==="NotReadableError")t="Another app is using the microphone. Close it and try again.";
+  else t="Recording did not work ("+n+"). Tap 🎥 Film our song.";
+  recMsg(t,true);
+}
+
+/* ---------- FINISH ---------- */
+function renderFinish(){
+  setAddr("finish");
+  var d=doneCount(),sc=score(),all=d===N;
+  var qs=N-1; var stars=sc>=Math.ceil(qs*0.85)?3:(sc>=Math.ceil(qs*0.6)?2:(sc>=1?1:0));
+  var h='<span class="pill">🎄 EAL 2 Christmas Hunt</span>';
+  h+='<section class="hero" style="background:linear-gradient(135deg,var(--green),var(--green-d))"><div class="big">'+(all?'🎉':'🧝')+'</div>';
+  h+='<h1 class="disp">'+(all?'You found Jingle!':'Nice try, '+esc(S.team)+'!')+'</h1>';
+  h+='<p>'+(all?'The tree is full. Merry Christmas, '+esc(S.team)+'!':'You found '+d+' of '+N+' places. You can go back and find more.')+'</p></section>';
+  h+='<div class="treebox" style="margin-top:.6rem">'+treeSVG()+'<div class="count disp">'+baubleCount()+' of '+BAUB.length+' baubles</div>'+starLine();
+  h+='<div class="stars" aria-label="'+stars+' stars">'+"⭐".repeat(stars)+"☆".repeat(3-stars)+'</div><div>Right first time: '+sc+' of '+qs+'</div></div>';
+  h+='<div class="card"><h2 class="disp" style="font-size:1.05rem">Our photos 📸</h2>';
+  var g="";ST.forEach(function(s){var p=getPhoto(s.id);if(p)g+='<figure><img src="'+p+'" alt="'+esc(s.title)+'"><figcaption>'+s.em+' '+esc(s.title)+'</figcaption></figure>';});
+  h+=g?'<div class="gallery">'+g+'</div>':'<p>No photos yet.</p>';
+  h+='<div id="songBox"></div><div class="note">Show this screen to your teacher.</div>';
+  h+='<button class="big-btn b-red" id="cardBtn">🎄 Make our Christmas card</button><div id="cardOut"></div></div>';
+  M.innerHTML=h;
+  BAR.innerHTML='<button class="big-btn b-white" id="backBtn">🎄 Back to the tree</button>';
+  document.getElementById("backBtn").onclick=function(){go("map");};
+  document.getElementById("cardBtn").onclick=makeCard;
+  if(all&&!S.finished){S.finished=true;save();celebrate(true);}
+  if(starOn())getSong(function(rec){var b=document.getElementById("songBox");if(!b||!rec)return;
+    b.innerHTML='<h2 class="disp" style="font-size:1.05rem;margin-top:.6rem">Our song 🎤</h2>'+mediaTag(rec)+'<a class="big-btn b-green" style="text-align:center;text-decoration:none" download="Our_Christmas_Song.'+extFor(rec.type)+'" href="'+URL.createObjectURL(rec.blob)+'">⬇ Save our song</a>';});
+}
+
+function makeCard(){
+  var out=document.getElementById("cardOut");
+  var pics=ST.map(function(s){return {s:s,p:getPhoto(s.id)};}).filter(function(o){return o.p;});
+  var W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+  g.fillStyle="#0f4d34";g.fillRect(0,0,W,H);
+  g.fillStyle="#c8102e";g.fillRect(0,0,W,210);
+  g.fillStyle="#f5a20f";g.fillRect(0,210,W,14);
+  g.fillStyle="#fff";g.textAlign="center";
+  g.font="900 78px 'Arial Black','Segoe UI Black',sans-serif";g.fillText("Merry Christmas!",W/2,110);
+  g.font="bold 46px Calibri,Carlito,Arial,sans-serif";g.fillText("from "+S.team,W/2,180);
+  for(var i=0;i<40;i++){g.fillStyle="rgba(255,255,255,"+(.15+Math.random()*.4)+")";g.beginPath();g.arc(Math.random()*W,250+Math.random()*(H-330),3+Math.random()*6,0,7);g.fill();}
+  var done=function(){
+    g.fillStyle="#f5a20f";g.fillRect(0,H-90,W,90);
+    g.fillStyle="#111";g.font="bold 40px Calibri,Carlito,Arial,sans-serif";
+    g.fillText("🎄 "+doneCount()+" of "+N+" places found  ⭐",W/2,H-32);
+    try{
+      var url=c.toDataURL("image/jpeg",0.85);
+      out.innerHTML='<img class="cardimg pop" src="'+url+'" alt="Our Christmas card"><a class="big-btn b-green" style="text-align:center;text-decoration:none" download="Our_Christmas_Card.jpg" href="'+url+'">⬇ Save the card</a><div class="note">On an iPhone, press and hold the card. Then tap Save.</div>';
+    }catch(e){out.innerHTML='<div class="note warn">Sorry, the card did not work.</div>';}
+  };
+  if(!pics.length){done();return;}
+  var cols=pics.length<=4?2:(pics.length<=9?3:4);var rows=Math.ceil(pics.length/cols);
+  var gap=18,top=260,areaH=H-top-120,cell=Math.min((W-gap*(cols+1))/cols,(areaH-gap*(rows-1))/rows);
+  var startX=(W-(cols*cell+(cols-1)*gap))/2;var left=pics.length;
+  pics.forEach(function(o,k){var im=new Image();im.onload=im.onerror=function(){
+    var cx=startX+(k%cols)*(cell+gap),cy=top+Math.floor(k/cols)*(cell+gap);
+    g.fillStyle="#fff";g.fillRect(cx-6,cy-6,cell+12,cell+12);
+    if(im.naturalWidth){var sw=Math.min(im.naturalWidth,im.naturalHeight);
+      g.drawImage(im,(im.naturalWidth-sw)/2,(im.naturalHeight-sw)/2,sw,sw,cx,cy,cell,cell);}
+    if(--left===0)done();
+  };im.src=o.p;});
+}
+
+/* ---------- confetti ---------- */
+var fx=document.getElementById("fx"),fc=fx.getContext("2d"),parts=[],anim=null;
+function celebrate(big){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  fx.width=innerWidth;fx.height=innerHeight;
+  var cols=["#c8102e","#0f4d34","#f5a20f","#ffffff","#1d5fa8","#7dff6b"];
+  for(var i=0;i<(big?220:90);i++)parts.push({x:innerWidth/2+(Math.random()-.5)*innerWidth*.6,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,
+    s:6+Math.random()*8,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.3,life:120+Math.random()*60});
+  if(!anim)anim=requestAnimationFrame(tick);
+}
+function tick(){
+  fc.clearRect(0,0,fx.width,fx.height);
+  parts=parts.filter(function(p){return p.life>0&&p.y<fx.height+40;});
+  parts.forEach(function(p){p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=p.vr;p.life--;
+    fc.save();fc.translate(p.x,p.y);fc.rotate(p.r);fc.fillStyle=p.c;fc.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);fc.restore();});
+  anim=parts.length?requestAnimationFrame(tick):null;
+  if(!anim)fc.clearRect(0,0,fx.width,fx.height);
+}
+
+/* ---------- stop double-tap and pinch zoom (iPhone fallback) ---------- */
+var lastTouch=0;
+document.addEventListener("touchend",function(e){var now=Date.now();
+  var t=e.target;var live=t.closest&&t.closest("button,a,input,label");
+  if(now-lastTouch<350&&!live){e.preventDefault();}lastTouch=now;},{passive:false});
+document.addEventListener("gesturestart",function(e){e.preventDefault();},{passive:false});
+document.addEventListener("dblclick",function(e){e.preventDefault();},{passive:false});
+
+/* star: works on every screen */
+M.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-singstar]");if(t){e.preventDefault();go("station",SING.id);}});
+
+/* ---------- go ---------- */
+applySize();
+go(S.started?"map":"start");
+})();
+</script>
+</body>
+</html>
